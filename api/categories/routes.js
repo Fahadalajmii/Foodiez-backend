@@ -4,13 +4,13 @@ const {
   createCategory,
   getCategoryRecipies,
 } = require("./controllers");
-const routes = express.Router();
+const categoryRoutes = express.Router();
 
 //fetch categories
-routes.get("/categories", getAllCategories);
+categoryRoutes.get("/categories", getAllCategories);
 //create a category
-routes.post("/categories", createCategory);
+categoryRoutes.post("/categories", createCategory);
 //fetch the recipies of a single category
-routes.get("/categories/:category", getCategoryRecipies);
+categoryRoutes.get("/categories/:category", getCategoryRecipies);
 
-module.exports = routes;
+module.exports = categoryRoutes;

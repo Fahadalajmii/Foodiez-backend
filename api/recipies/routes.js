@@ -1,12 +1,19 @@
 const express = require("express");
-const { getAllRecipies, createRecipe, viewRecipe } = require("./controllers");
-const routes = express.Router();
+const {
+  getAllRecipies,
+  createRecipe,
+  viewRecipe,
+  updateRecipe,
+} = require("./controllers");
+const recipeRoutes = express.Router();
 
 //fetch all recipies
-routes.get("/recipies", getAllRecipies);
+recipeRoutes.get("/recipies", getAllRecipies);
 //create a recipies
-routes.post("/recipies/", createRecipe);
+recipeRoutes.post("/recipies/", createRecipe);
 //view single recipe
-routes.post("/recipies/:recipeId", viewRecipe);
+recipeRoutes.get("/recipies/:recipeId", viewRecipe);
+//modify a recipe
+recipeRoutes.put("/recipies/:recipeId", updateRecipe);
 
-module.exports = routes;
+module.exports = recipeRoutes;

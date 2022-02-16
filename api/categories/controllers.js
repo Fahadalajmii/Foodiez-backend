@@ -6,6 +6,7 @@ const getAllCategories = async (req, res, next) => {
     res.json(categories);
   } catch (error) {
     console.error(error);
+    next(error);
   }
 };
 
@@ -20,6 +21,14 @@ const createCategory = async (req, res, next) => {
 };
 const getCategoryRecipies = async (req, res, next) => {
   try {
+    const { categoryId } = req.params;
+    const foundCategory = await Category.findById(categoryId);
+    if (foundCategory) {
+      return res.json(foundCategory);
+    } else {
+      res.status(404).json({ msg: "Category not found" });
+      next(error);
+    }
   } catch (error) {
     console.error(error);
     next(error);
