@@ -1,5 +1,5 @@
 const Recipe = require("../../models/Recipe");
-
+const Category = require("../../models/Category");
 const getAllRecipies = async (req, res, next) => {
   try {
     const recipies = await Recipe.find();
@@ -11,10 +11,17 @@ const getAllRecipies = async (req, res, next) => {
 
 const createRecipe = async (req, res, next) => {
   try {
+    if (req.file) {
+      req.body.image = `${req.protocol}://${req.get("host")}/${req.file.path} `;
+      req.body.image = req.body.image.replace("\\", "/");
+    }
     const { categoryId } = req.params;
     req.body.category = categoryId;
     console.log(req.body);
     const newRecipe = await Recipe.create(req.body);
+    await Category.findByIdAndUpdate(categoryId, {
+      $push: { recipies: newRecipe._id },
+    });
     return res.status(201).json(newRecipe);
   } catch (error) {
     console.error(error);
@@ -33,6 +40,10 @@ const viewRecipe = async (req, res, next) => {
   }
 };
 const updateRecipe = async (req, res) => {
+  if (req.file) {
+    req.body.image = `${req.protocol}://${req.get("host")}/${req.file.path} `;
+    req.body.image = req.body.image.replace("\\", "/");
+  }
   const { recipeId } = req.params;
   const recipeupdate = req.body;
   try {
