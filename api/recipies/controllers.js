@@ -33,7 +33,11 @@ const viewRecipe = async (req, res, next) => {
   try {
     const { recipeId } = req.params;
     const foundRecipe = await Recipe.findById(recipeId);
-    if (foundRecipe) return res.json(foundCategory);
+    if (foundRecipe) {
+      // const findCategory = Category.findById(foundRecipe.category);
+      // console.log(res.json(foundRecipe, findCategory.title));
+      return res.json(foundRecipe);
+    }
   } catch (error) {
     console.error(error);
     next(error);
