@@ -1,5 +1,15 @@
 const Ingredient = require("../../models/Ingredient");
 
+const getAllIngredients = async (req, res, next) => {
+  try {
+    const Ingredients = await Ingredient.find();
+    res.json(Ingredients);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
 const createIngredient = async (req, res, next) => {
   try {
     console.log(req.body);
@@ -18,4 +28,5 @@ const createIngredient = async (req, res, next) => {
 
 module.exports = {
   createIngredient,
+  getAllIngredients,
 };
