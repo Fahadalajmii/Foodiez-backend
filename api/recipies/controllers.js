@@ -1,5 +1,6 @@
 const Recipe = require("../../models/Recipe");
 const Category = require("../../models/Category");
+const Ingredient = require("../../models/Ingredient");
 
 const getAllRecipies = async (req, res, next) => {
   try {
@@ -18,10 +19,28 @@ const createRecipe = async (req, res, next) => {
     }
     const categoryId = req.body.category;
     console.log(req.body);
+
     const newRecipe = await Recipe.create(req.body);
     await Category.findByIdAndUpdate(categoryId, {
       $push: { recipies: newRecipe._id },
     });
+
+    req.body.ing
+      .trim()
+      .split(",")
+      .forEach(async (ingredient) => {
+        console.log(ingredient);
+        const foundIng = await Ingredient.findOne({ name: ingredient.trim() });
+        if (foundIng) {
+          await Recipe.findByIdAndUpdate(newRecipe._id, {
+            $push: { ingredients: foundIng._id },
+          });
+
+          await Ingredient.findByIdAndUpdate(foundIng._id, {
+            $push: { recipies: newRecipe._id },
+          });
+        }
+      });
     return res.status(201).json(newRecipe);
   } catch (error) {
     console.error(error);
