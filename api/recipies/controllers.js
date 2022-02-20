@@ -1,5 +1,6 @@
 const Recipe = require("../../models/Recipe");
 const Category = require("../../models/Category");
+
 const getAllRecipies = async (req, res, next) => {
   try {
     const recipies = await Recipe.find();
@@ -15,8 +16,7 @@ const createRecipe = async (req, res, next) => {
       req.body.image = `${req.protocol}://${req.get("host")}/${req.file.path} `;
       req.body.image = req.body.image.replace("\\", "/");
     }
-    const { categoryId } = req.params;
-    req.body.category = categoryId;
+    const categoryId = req.body.category;
     console.log(req.body);
     const newRecipe = await Recipe.create(req.body);
     await Category.findByIdAndUpdate(categoryId, {
@@ -43,6 +43,7 @@ const viewRecipe = async (req, res, next) => {
     next(error);
   }
 };
+
 const updateRecipe = async (req, res) => {
   if (req.file) {
     req.body.image = `${req.protocol}://${req.get("host")}/${req.file.path} `;
@@ -67,9 +68,33 @@ const updateRecipe = async (req, res) => {
   }
 };
 
+const deleteRecipe = async (req, res, next) => {
+  try {
+    const { recipeId } = req.params;
+    const foundRecipe = await Recipe.findById(recipeId).populate("category");
+    let theCategory = await Category.findById(
+      foundRecipe.category._id
+    ).populate("recipies");
+
+    if (foundRecipe) {
+      await Recipe.findByIdAndDelete(recipeId);
+      theCategory = theCategory.recipies.filter(
+        (recipe) => recipe._id !== recipeId
+      );
+      await Category.findByIdAndUpdate(theCategory._id, theCategory);
+      res.status(201).end();
+    } else {
+      res.status(404).json({ msg: "Recipe not found" });
+    }
+  } catch (error) {
+    res.status(400).json({ msg: error.message });
+  }
+};
+
 module.exports = {
   getAllRecipies,
   createRecipe,
   viewRecipe,
   updateRecipe,
+  deleteRecipe,
 };

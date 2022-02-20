@@ -19,14 +19,19 @@ const createCategory = async (req, res, next) => {
     next(error);
   }
 };
+
 const getCategoryRecipies = async (req, res, next) => {
   try {
-    const { categoryId } = req.params;
-    const foundCategory = await Category.findById(categoryId);
+    const categoryId = req.params.categoryId;
+    const foundCategory = await Category.findById(categoryId).populate(
+      "recipies"
+    );
+    console.log(foundCategory);
+
     if (foundCategory) {
-      return res.json(foundCategory);
+      return res.json(foundCategory.recipies);
     } else {
-      res.status(404).json({ msg: "Category not found" });
+      res.status(404).json({ msg: "Recipes not found" });
       next(error);
     }
   } catch (error) {
